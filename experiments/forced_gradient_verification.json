@@ -1,0 +1,26 @@
+[
+  {
+    "config": 3,
+    "input_freq": 0.8,
+    "cos_an_fd": 1.0,
+    "cos_tp_fd": 0.9999999999258338,
+    "cos_tp_an": 0.999999999925825,
+    "J_asymmetry": 0.0,
+    "residual_free": 1.7636176963264916e-09,
+    "residual_clamp": 3.1086244689504383e-15,
+    "n_sensors": 6,
+    "N": 11
+  },
+  {
+    "config": 3,
+    "input_freq": 1.5,
+    "cos_an_fd": 1.0,
+    "cos_tp_fd": 0.9999999892243201,
+    "cos_tp_an": 0.9999999892251916,
+    "J_asymmetry": 0.0,
+    "residual_free": 3.521157232455607e-08,
+    "residual_clamp": 1.0664592039327792e-14,
+    "n_sensors": 6,
+    "N": 11
+  }
+]
