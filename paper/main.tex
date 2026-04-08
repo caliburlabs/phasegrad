@@ -462,33 +462,41 @@ entries.
 \end{theorem}
 
 \begin{proof}
-  \textbf{Step 1.} The equilibrium condition~$F(\thetastar, \bomega) = 0$
-  defines~$\thetastar$ as an implicit function of~$\bomega^c$. Since
-  $\partial F / \partial \bomega^c = I$ (each~$\omega_k^c$ enters only
-  equation~$k$, linearly), the IFT gives
+  The energy~\eqref{eq:ep-general} depends on~$\omega_k$ only through
+  the term~$-\omega_k\theta_k$, so
+  $\partial E / \partial \omega_k = -\theta_k$. Applying the general EP
+  formula~\eqref{eq:ep-general} with~$\lambda = \omega_k$:
+  \[
+    \pd{L}{\omega_k}
+    = \lim_{\beta \to 0} \frac{1}{\beta}
+      \bigl[-\theta_k^\beta - (-\theta_k^*)\bigr]
+    = -\lim_{\beta \to 0}
+      \frac{\theta_k^\beta - \theta_k^*}{\beta}.
+      \qedhere
+  \]
+\end{proof}
+
+\begin{remark}[Structural interpretation via the IFT]
+  \label{rem:ift}
+  The identity also follows from the implicit function theorem, which
+  reveals the mechanism of gradient propagation. The equilibrium
+  condition~$F(\thetastar, \bomega) = 0$ gives
+  $\partial \thetastar / \partial \bomega^c = -\tilde{J}^{-1}$,
   \begin{equation}
-    \pd{\thetastar}{\bomega^c} = -\tilde{J}^{-1}.
+    \pd{\thetastar}{\bomega^c} = -\tilde{J}^{-1},
     \label{eq:ift}
   \end{equation}
-
-  \textbf{Step 2.} The loss gradient is
-  $\partial L / \partial \bomega^c
-  = (\partial \thetastar / \partial \bomega^c)^\transpose
-  \, \partial L / \partial \thetastar
-  = -\tilde{J}^{-\transpose} \bm{e}$,
-  where~$e_i = (\theta_i^* - \theta_i^{\mathrm{tgt}})
-  \mathbf{1}_{i \in \mathcal{O}}$.
-
-  \textbf{Step 3.} Writing the nudged equilibrium as~$G(\thetabeta,
-  \beta) = 0$ and applying the IFT with respect to~$\beta$:
-  $\dd \thetabeta / \dd \beta |_{\beta=0}
-  = -\tilde{J}^{-1}(-\bm{e}) = \tilde{J}^{-1} \bm{e}$.
-
-  \textbf{Combining.} By \Cref{prop:symmetry},
-  $\tilde{J}^{-\transpose} = \tilde{J}^{-1}$, so
-  $(\theta_k^\beta - \theta_k^*)/\beta \to
-  [\tilde{J}^{-1}\bm{e}]_k = -\partial L / \partial \omega_k^c$.
-\end{proof}
+  since $\partial F / \partial \bomega^c = I$. The loss gradient is
+  then~$\partial L / \partial \bomega^c = -\tilde{J}^{-\transpose}
+  \bm{e}$, where~$e_i = (\theta_i^* - \theta_i^{\mathrm{tgt}})
+  \mathbf{1}_{i \in \mathcal{O}}$, and the nudge response is
+  $\dd \thetabeta / \dd \beta |_{\beta=0} = \tilde{J}^{-1}\bm{e}$.
+  By \Cref{prop:symmetry}, $\tilde{J}^{-\transpose} = \tilde{J}^{-1}$,
+  so the two expressions coincide. This derivation shows that gradient
+  propagation is mediated by~$\tilde{J}^{-1}$, the Green's function of
+  the coupling-weighted graph Laplacian: the gradient diffuses on the
+  coupling graph.
+\end{remark}
 
 \begin{remark}[Coupling weight gradient]
   \label{rem:coupling-gradient}
