@@ -181,7 +181,7 @@ def fig1_schematic():
     # Panel (b)
     ax_b = fig.add_subplot(gs[0, 2])
     _panel(ax_b, ph_clamp, '(b)',
-           r'Clamped equilibrium $\boldsymbol{\theta}^\beta$', clamp=True)
+           r'Nudged equilibrium $\boldsymbol{\theta}^\beta$', clamp=True)
 
     # Arrow b->c
     ax2 = fig.add_subplot(gs[0, 3]); ax2.axis('off')
@@ -194,7 +194,7 @@ def fig1_schematic():
     # Panel (c)
     ax_c = fig.add_subplot(gs[0, 4])
     _panel(ax_c, ph_free, '(c)',
-           r'$\Delta\theta/\beta\;=\;-\partial L/\partial\omega$',
+           r'$\Delta\theta/\beta\;\approx\;-\partial L/\partial\omega$',
            grad=True)
 
     fig.savefig(FIGDIR / 'fig1_schematic.pdf', bbox_inches='tight',

@@ -45,8 +45,8 @@
 % TITLE
 % ------------------------------------------------------------------
 \title{%
-  The Gradient Was Already There:\\
-  Exact Frequency Gradients in Coupled Oscillator Networks
+  Equilibrium Propagation with Natural Frequencies\\
+  in Coupled Oscillator Networks
 }
 
 \author{
@@ -63,47 +63,19 @@
 % ABSTRACT
 % ------------------------------------------------------------------
 \begin{abstract}
-Training a neural network requires a backward pass: store every
-intermediate activation, propagate error gradients layer by layer, update
-parameters via the chain rule. This backward pass consumes two-thirds of
-training compute and requires activation memory proportional to network
-depth. We prove that in a coupled oscillator network at stable
-equilibrium, no backward pass is needed: the physical phase displacement
-under weak output clamping \emph{is} the exact gradient of the loss with
-respect to natural frequencies. The proof, a three-step application of the
-implicit function theorem to Kuramoto dynamics, reveals that the
-equilibrium Jacobian is a coupling-weighted graph Laplacian whose inverse
-mediates gradient propagation as diffusion on the coupling graph.
-
-Prior applications of equilibrium propagation to oscillator networks
-explicitly set aside natural frequency as a learnable parameter, citing
-concerns about loss of stable fixed
-points~\citep{wang2024training}. We test this directly on sparse
-layered architectures. Across 100~seeds, all-seed final-epoch test
-accuracy is statistically indistinguishable between $\omega$-only and
-$K$-only learning ($p = 0.98$), but among runs that achieve training
-convergence ($\sim$47\% of random seeds in both conditions), $\omega$-only
-attains substantially higher test accuracy: 96.0\% vs.\ 83.3\% at
-matched parameter counts (7~vs.~7; $p < 10^{-12}$, Welch's $t$-test;
-convergence defined by final-epoch training accuracy exceeding 60\%).
-Tripling the coupling parameter budget does not close the gap.
-This is a sparse-architecture result, not a universal ranking of
-oscillator parameters: Wang~et~al.\ achieve 94.1\% on MNIST with
-coupling-only learning on dense networks.
-The~$\sim$50\% convergence failure rate under random initialization is
-diagnosed as loss-landscape multistability, not gradient error: the same
-seeds fail across five distinct training modifications (Cochran's
-$Q = 0$). In the sparse layered settings tested, we eliminate this
-failure with \emph{spectral seeding}: initializing frequencies as a
-weighted sum of the coupling Laplacian's eigenvectors, each weighted by
-its output separation divided by its eigenvalue. On the primary task
-this raises the fraction of seeds exceeding 60\% final test accuracy
-from 46/100 to 100/100 (54~seeds rescued, 0~lost, converged
-accuracy 97.6\%); the result holds across a second vowel task, $K$-only
-training, and a larger architecture (50/50 in all cases).
-
-The gradient was already there. It was in the phase displacement, waiting
-to be read.
+We prove that in a coupled Kuramoto oscillator network at stable
+equilibrium, the physical phase displacement under weak output nudging
+is the gradient of the loss with respect to natural frequencies, with
+equality as the nudging strength~$\beta \to 0$. Prior oscillator
+equilibrium propagation work explicitly set aside natural frequency as a
+learnable parameter~\citep{wang2024training}; we show that on sparse
+layered architectures, frequency learning outperforms coupling-weight
+learning among converged seeds (96.0\% vs.\ 83.3\% at matched parameter
+counts, $p < 10^{-12}$). The~$\sim$50\% convergence failure rate under
+random initialization is a loss-landscape property, not a gradient error;
+topology-aware \emph{spectral seeding} eliminates it in all settings
+tested (46/100~$\to$~100/100 seeds on the primary task; 50/50 on a
+second task, $K$-only training, and a larger architecture).
 \end{abstract}
 
 % ------------------------------------------------------------------
@@ -215,7 +187,7 @@ was in the phase displacement all along.
 Scellier and Bengio~\citeyearpar{scellier2017equilibrium} proved that for
 energy-based models at equilibrium, the gradient of a cost function with
 respect to model parameters can be estimated from the difference between a
-free-running and a weakly clamped equilibrium. Scellier~\citeyearpar{scellier2018generalization}
+free-running and a weakly nudged equilibrium. Scellier~\citeyearpar{scellier2018generalization}
 later generalized EP to vector field dynamics without an energy function.
 Ernoult~et~al.~\citeyearpar{ernoult2019updates} proved that EP gradients
 match backpropagation-through-time gradients exactly in RNNs with static
@@ -241,8 +213,11 @@ handle frequency dispersion, achieving 97.8\% on full MNIST in the
 synchronized case and 96--97\% under dispersion, with coupling-only
 learning. Gower~et~al.~\citeyearpar{gower2025train,
 gower2025learning} mapped EP onto oscillator Ising machines in standard
-CMOS. None of these works derive the gradient formula for natural frequency
-or verify gradient exactness.
+CMOS. Zoppo~et~al.~\citeyearpar{zoppo2022ep} applied EP to
+memristor-based Van~der~Pol oscillator networks for associative memory,
+training coupling weights in a circuit-realistic setting. None of these
+works derive the gradient formula for natural frequency or verify
+gradient exactness.
 
 \paragraph{Onsager reciprocity and EP.}
 Wanjura and Marquardt~\citeyearpar{wanjura2025quantum}, working in the
@@ -390,7 +365,7 @@ the nonsingularity required by the implicit function theorem.
 
 Equilibrium propagation~\citep{scellier2017equilibrium} computes parameter
 gradients in energy-based systems at fixed points. For a system with
-energy~$E(\btheta; \lambda)$ and output loss~$L(\btheta)$, weakly clamping
+energy~$E(\btheta; \lambda)$ and output loss~$L(\btheta)$, weakly nudging
 the output produces a perturbed equilibrium whose displacement encodes the
 parameter gradient:
 \begin{equation}
@@ -423,11 +398,13 @@ well-behaved. The next section addresses these questions.
   \includegraphics[width=\textwidth]{figures/fig1_schematic.pdf}
   \caption{%
     The two-phase gradient readout protocol. \textbf{(a)}~Solve for the free
-    equilibrium~$\thetastar$. \textbf{(b)}~Add a weak clamping
+    equilibrium~$\thetastar$. \textbf{(b)}~Add a weak nudging
     force~$-\beta(\theta_i - \theta_i^{\mathrm{tgt}})$ at output oscillators
     and re-solve for~$\thetabeta$. \textbf{(c)}~The per-node phase
-    displacement~$(\theta_k^\beta - \theta_k^*)/\beta$ equals the negative
-    gradient~$-\partial L / \partial \omega_k^c$ (Theorem~\ref{thm:freq-gradient}).
+    displacement~$(\theta_k^\beta - \theta_k^*)/\beta$ approximates the
+    negative gradient~$-\partial L / \partial \omega_k^c$ at finite~$\beta$,
+    with equality in the limit~$\beta \to 0$
+    (Theorem~\ref{thm:freq-gradient}).
     Blue: input nodes (frequencies set by data). Gray: hidden nodes.
     Amber: output nodes. Dashed line in~(b): target phase.
   }
@@ -447,16 +424,16 @@ entries.
   where~$\mathcal{O}$ is the set of output oscillators.
 \end{definition}
 
-\begin{definition}[Clamped equilibrium]
-  \label{def:clamped}
-  For clamping strength~$\beta > 0$, $\thetabeta$ satisfies
+\begin{definition}[Nudged equilibrium]
+  \label{def:nudged}
+  For nudging strength~$\beta > 0$, $\thetabeta$ satisfies
   \begin{equation}
     \omega_i^c
     + \sum_j K_{ij}\sin(\theta_j^\beta - \theta_i^\beta)
     - \beta\,(\theta_i^\beta - \theta_i^{\mathrm{tgt}})
     \,\mathbf{1}_{i \in \mathcal{O}}
     = 0.
-    \label{eq:clamped-equilibrium}
+    \label{eq:nudged-equilibrium}
   \end{equation}
 \end{definition}
 
@@ -502,7 +479,7 @@ entries.
   where~$e_i = (\theta_i^* - \theta_i^{\mathrm{tgt}})
   \mathbf{1}_{i \in \mathcal{O}}$.
 
-  \textbf{Step 3.} Writing the clamped equilibrium as~$G(\thetabeta,
+  \textbf{Step 3.} Writing the nudged equilibrium as~$G(\thetabeta,
   \beta) = 0$ and applying the IFT with respect to~$\beta$:
   $\dd \thetabeta / \dd \beta |_{\beta=0}
   = -\tilde{J}^{-1}(-\bm{e}) = \tilde{J}^{-1} \bm{e}$.
@@ -550,34 +527,40 @@ with a mean scale error of 1.3\% across 20~random networks.
 \section{Numerical Verification}
 \label{sec:verification}
 
-We compute~$\partial L / \partial \bomega^c$ by three methods: (1)
+We compute~$\partial L / \partial \bomega^c$ by four methods: (1)
 \textbf{two-phase}: $-(\thetabeta - \thetastar)/\beta$ at
 $\beta = 10^{-4}$; (2) \textbf{analytical}: $-\tilde{J}^{-1}\bm{e}$; (3)
 \textbf{finite-difference}: perturb each~$\omega_k^c$ by~$\pm 10^{-5}$,
-re-solve, compute centered difference. All three share the equilibrium
-solver (\texttt{scipy.optimize.fsolve}); they are methodologically
-independent but not computationally independent. An autograd cross-check
-remains as future work.
+re-solve, compute centered difference; (4) \textbf{autograd}: reimplemented
+the equilibrium solver as a Newton iteration in PyTorch, differentiated
+through it via the implicit function theorem using a custom
+\texttt{torch.autograd.Function}, and obtained~$\partial L / \partial
+\bomega^c$ by backpropagation.  Methods~(1)--(3) share the equilibrium
+solver (\texttt{scipy.optimize.fsolve}); method~(4) is computationally
+independent, using only PyTorch tensors and \texttt{torch.linalg.solve}
+for both the forward solve and the backward pass.
 
 \begin{table}[t]
   \centering
   \caption{%
-    Phase-gradient identity verification. Cosine similarity between the
-    two-phase and finite-difference gradient vectors.
+    Phase-gradient identity verification. Cosine similarity between
+    gradient vectors computed by the scipy-based two-phase (TP) and
+    finite-difference (FD) methods, and by the computationally independent
+    PyTorch autograd (AG) method.
   }
   \label{tab:verification}
-  \begin{tabular}{@{}rccc@{}}
+  \begin{tabular}{@{}rcccc@{}}
     \toprule
-    $N$ & Freq.\ params & Cosine (TP vs FD) & Eq.\ residual \\
+    $N$ & Freq.\ params & Cosine (TP vs FD) & Cosine (AG vs TP) & Eq.\ residual \\
     \midrule
-    6   & 5   & 1.000000 & $8.4 \times 10^{-14}$ \\
-    10  & 9   & 1.000000 & $2.2 \times 10^{-16}$ \\
-    15  & 14  & 1.000000 & $3.4 \times 10^{-14}$ \\
-    20  & 19  & 1.000000 & $2.9 \times 10^{-15}$ \\
-    30  & 29  & 1.000000 & $1.0 \times 10^{-15}$ \\
-    50  & 49  & 1.000000 & $8.3 \times 10^{-17}$ \\
-    100 & 99  & 1.000000 & $1.1 \times 10^{-16}$ \\
-    200 & 199 & 1.000000 & $1.1 \times 10^{-16}$ \\
+    6   & 5   & 1.000000 & 1.000000 & $8.4 \times 10^{-14}$ \\
+    10  & 9   & 1.000000 & 1.000000 & $2.2 \times 10^{-16}$ \\
+    15  & 14  & 1.000000 & 1.000000 & $3.4 \times 10^{-14}$ \\
+    20  & 19  & 1.000000 & 1.000000 & $2.9 \times 10^{-15}$ \\
+    30  & 29  & 1.000000 & 1.000000 & $1.0 \times 10^{-15}$ \\
+    50  & 49  & 1.000000 & 1.000000 & $8.3 \times 10^{-17}$ \\
+    100 & 99  & 1.000000 & 1.000000 & $1.1 \times 10^{-16}$ \\
+    200 & 199 & 1.000000 & 1.000000 & $1.1 \times 10^{-16}$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -600,7 +583,12 @@ remains as future work.
 networks (edge probability~0.6, $K_{\text{mean}} = 5.0$,
 $\omega \sim \mathcal{N}(0, 0.3^2)$). At every size from~$N = 6$ to
 $N = 200$, the cosine similarity between two-phase and finite-difference
-gradients is~$1.000000$ (\Cref{fig:verification}a). All three pairwise cosines agree.
+gradients is~$1.000000$ (\Cref{fig:verification}a). All four pairwise cosines
+agree. Crucially, the autograd column (AG vs TP) provides a computationally
+independent check: the PyTorch Newton solver and implicit-differentiation
+backward pass share no code with the scipy-based methods, yet produce
+identical gradients at every scale. Multi-seed tests (10~seeds at~$N = 10$)
+confirm robustness, with all cosines exceeding~$0.999999$.
 
 \begin{table}[t]
   \centering
@@ -1007,7 +995,7 @@ physical implementations; doing so is future work.
 \subsection{Physical Realizability}
 
 A physical implementation would map~$\omega_i$ to bias current or supply
-voltage, $K_{ij}$ to coupling capacitance, clamping to weak injection
+voltage, $K_{ij}$ to coupling capacitance, nudging to weak injection
 current at output oscillators, and gradient readout to phase measurement
 via time-to-digital conversion or optical interference. In principle,
 the learning loop would operate at oscillator settling time without a
@@ -1242,6 +1230,13 @@ N.~Zucchet and J.~Sacramento.
 \newblock Beyond backpropagation: Bilevel optimization through implicit
   differentiation and equilibrium propagation.
 \newblock \emph{Neural Computation}, 34(12):2309--2346, 2022.
+
+\bibitem[Zoppo et~al.(2022)]{zoppo2022ep}
+G.~Zoppo, F.~Marrone, M.~Bonnin, and F.~Corinto.
+\newblock Equilibrium propagation and (memristor-based) oscillatory neural
+  networks.
+\newblock In \emph{IEEE International Symposium on Circuits and Systems
+  (ISCAS)}, pp.~639--643, 2022.
 
 \end{thebibliography}
 
