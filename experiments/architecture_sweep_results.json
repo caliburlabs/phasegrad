@@ -1,0 +1,65 @@
+{
+  "architecture_sweep": [
+    {
+      "n_hidden": 3,
+      "n_total": 7,
+      "n_omega_params": 5,
+      "n_K_params": 14,
+      "omega_mean": 0.44909090909090904,
+      "K_mean": 0.421090909090909,
+      "omega_converged_mean": 0.9359307359307358,
+      "K_converged_mean": 0.8392344497607656,
+      "omega_conv_rate": 0.42,
+      "K_conv_rate": 0.38
+    },
+    {
+      "n_hidden": 5,
+      "n_total": 9,
+      "n_omega_params": 7,
+      "n_K_params": 24,
+      "omega_mean": 0.4454545454545454,
+      "K_mean": 0.4410909090909091,
+      "omega_converged_mean": 0.9553719008264462,
+      "K_converged_mean": 0.8181818181818181,
+      "omega_conv_rate": 0.44,
+      "K_conv_rate": 0.42
+    },
+    {
+      "n_hidden": 7,
+      "n_total": 11,
+      "n_omega_params": 9,
+      "n_K_params": 34,
+      "omega_mean": 0.5061818181818182,
+      "K_mean": 0.4985454545454545,
+      "omega_converged_mean": 0.8962962962962963,
+      "K_converged_mean": 0.8251748251748251,
+      "omega_conv_rate": 0.54,
+      "K_conv_rate": 0.52
+    },
+    {
+      "n_hidden": 10,
+      "n_total": 14,
+      "n_omega_params": 12,
+      "n_K_params": 49,
+      "omega_mean": 0.5763636363636363,
+      "K_mean": 0.5516363636363637,
+      "omega_converged_mean": 0.9047021943573668,
+      "K_converged_mean": 0.8285714285714286,
+      "omega_conv_rate": 0.58,
+      "K_conv_rate": 0.56
+    },
+    {
+      "n_hidden": 15,
+      "n_total": 19,
+      "n_omega_params": 17,
+      "n_K_params": 74,
+      "omega_mean": 0.5192727272727273,
+      "K_mean": 0.5138181818181818,
+      "omega_converged_mean": 0.8818181818181817,
+      "K_converged_mean": 0.8669090909090909,
+      "omega_conv_rate": 0.52,
+      "K_conv_rate": 0.5
+    }
+  ],
+  "convergence_criterion": "final_epoch_train_acc > 0.6"
+}

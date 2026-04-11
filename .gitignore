@@ -1,0 +1,25 @@
+# Build artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# LaTeX build
+paper/main.aux
+paper/main.fdb_latexmk
+paper/main.fls
+paper/main.log
+paper/main.out
+paper/main.synctex.gz
+
+# Working notes (not part of publication)
+paper/related-papers/
+paper/hardware/
+
+# OS
+.DS_Store
+
+# Claude Code
+.claude/

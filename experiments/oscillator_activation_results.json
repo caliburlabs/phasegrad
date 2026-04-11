@@ -1,0 +1,39 @@
+{
+  "linear": {
+    "test_acc": 0.886,
+    "time_s": 12
+  },
+  "relu": {
+    "test_acc": 0.908,
+    "time_s": 13
+  },
+  "tanh": {
+    "test_acc": 0.908,
+    "time_s": 13
+  },
+  "osc_chain_K3": {
+    "test_acc": 0.417,
+    "time_s": 271
+  },
+  "osc_chain_K5": {
+    "test_acc": 0.4,
+    "time_s": 257
+  },
+  "osc_sparse_K3": {
+    "test_acc": 0.444,
+    "time_s": 251
+  },
+  "osc_alltoall_K5": {
+    "test_acc": 0.889,
+    "time_s": 98
+  },
+  "summary": {
+    "linear_acc": 0.886,
+    "relu_acc": 0.908,
+    "best_osc_acc": 0.889,
+    "best_osc_name": "osc_alltoall_K5",
+    "beats_linear": true,
+    "matches_relu": false,
+    "gap_to_relu": 0.019
+  }
+}
