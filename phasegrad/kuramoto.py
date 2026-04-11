@@ -255,6 +255,76 @@ def make_network(n_input: int = 2, n_hidden: int = 5, n_output: int = 2,
     )
 
 
+def make_deep_network(n_input: int = 2, hidden_layers: list[int] = [5],
+                      n_output: int = 2, K_scale: float = 2.0,
+                      input_scale: float = 1.5, seed: int = 42) -> KuramotoNetwork:
+    """Create a layered Kuramoto network with arbitrary depth.
+
+    Architecture: input → hidden_0 → hidden_1 → ... → output.
+    Adjacent layers are all-to-all coupled. Within each hidden layer,
+    nodes are chain-coupled.
+
+    Backward compatible: make_deep_network(hidden_layers=[H]) produces
+    identical output to make_network(n_hidden=H) at the same seed.
+
+    Args:
+        n_input: number of input oscillators.
+        hidden_layers: list of hidden layer sizes (e.g. [5, 5] for two layers).
+        n_output: number of output oscillators.
+        K_scale: mean coupling strength.
+        input_scale: multiplier for input frequency encoding.
+        seed: random seed for reproducible initialization.
+    """
+    rng = np.random.default_rng(seed)
+
+    # Build layer structure: [input, hidden_0, ..., hidden_L, output]
+    layer_sizes = [n_input] + list(hidden_layers) + [n_output]
+    N = sum(layer_sizes)
+
+    # Compute node index ranges per layer
+    offsets = [0]
+    for s in layer_sizes:
+        offsets.append(offsets[-1] + s)
+    layer_ids = [list(range(offsets[l], offsets[l + 1]))
+                 for l in range(len(layer_sizes))]
+
+    input_ids = layer_ids[0]
+    output_ids = layer_ids[-1]
+    hidden_ids_flat = []
+    for l in range(1, len(layer_ids) - 1):
+        hidden_ids_flat.extend(layer_ids[l])
+
+    # Natural frequencies: zero for inputs, random for hidden + output
+    omega = np.zeros(N)
+    for i in hidden_ids_flat + output_ids:
+        omega[i] = rng.uniform(-0.3, 0.3)
+
+    K = np.zeros((N, N))
+
+    # Inter-layer coupling: all-to-all between consecutive layers
+    for l in range(len(layer_sizes) - 1):
+        src = layer_ids[l]
+        dst = layer_ids[l + 1]
+        for i in src:
+            for j in dst:
+                s = K_scale * rng.uniform(0.5, 1.5)
+                K[i, j] = K[j, i] = s
+
+    # Intra-layer chain coupling within each hidden layer
+    for l in range(1, len(layer_ids) - 1):
+        ids = layer_ids[l]
+        for k in range(len(ids) - 1):
+            h1, h2 = ids[k], ids[k + 1]
+            s = K_scale * rng.uniform(0.5, 1.0)
+            K[h1, h2] = K[h2, h1] = s
+
+    return KuramotoNetwork(
+        omega=omega, K=K,
+        input_ids=input_ids, output_ids=output_ids,
+        input_scale=input_scale,
+    )
+
+
 def make_random_network(N: int, K_mean: float = 5.0, omega_spread: float = 0.3,
                         connectivity: float = 0.6, n_output: int = 2,
                         seed: int = 42) -> KuramotoNetwork:
